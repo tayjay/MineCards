@@ -1,5 +1,7 @@
 package com.tayjay.minecards.item;
 
+import com.tayjay.minecards.GuiHandler;
+import com.tayjay.minecards.MineCards;
 import com.tayjay.minecards.card.Card;
 import com.tayjay.minecards.card.CardRegistry;
 import com.tayjay.minecards.init.ModItems;
@@ -7,7 +9,10 @@ import com.tayjay.minecards.reference.Names;
 import com.tayjay.minecards.util.NBTHelper;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.boss.EntityWither;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
@@ -28,22 +33,30 @@ public class ItemCard extends ItemMC
         this.maxStackSize = 1;
         setHasSubtypes(true); // This allows the item to be marked as a metadata item.
         setMaxDamage(0); // This makes it so your item doesn't have the damage bar at the bottom of its icon, when "damaged" similar to the Tools.
+        setCreativeTab(CreativeTabs.tabMisc);
         ModItems.register(this);
     }
 
+    /*
     @Override
     public IIcon getIconFromDamage(int p_77617_1_)
     {
         return super.getIconFromDamage(p_77617_1_);
     }
+    */
 
     @Override
     public void getSubItems(Item item, CreativeTabs tabs, List list)
     {
-        //super.getSubItems(item, tabs, list);
-        for(int i = 0; i <= CardRegistry.totalCards; ++i){
-            list.add(new ItemStack(item,1,i));
+
+        for(Card card: Card.cards.values())
+        {
+            ItemStack i = new ItemStack(this);
+            card.writeToItemStack(i);
+            list.add(i);
         }
+
+        //super.getSubItems(item,tabs,list);
 
     }
 
@@ -65,28 +78,17 @@ public class ItemCard extends ItemMC
     @Override
     public String getItemStackDisplayName(ItemStack itemStack)
     {
-        return CardRegistry.getCardById(this.getDamage(itemStack)).getCardName();
+        String name;
+        return (name = NBTHelper.getString(itemStack,"cardName"))==null ? "null" : name;
     }
 
     @Override
     public void addInformation(ItemStack itemStack, EntityPlayer player, List list, boolean par4)
     {
-        Card card = CardRegistry.getCardById(this.getDamage(itemStack));
-        //this.setDamage(itemStack, NBTHelper.getInt(itemStack, "id"));
-        list.add("ID: "+card.getId());
-        list.add("Rarity: "+card.getRarity());
-        list.add("Set: " + card.getSetName());
-            /*
-            String owner = itemStack.stackTagCompound.getString("owner");
-            int code = itemStack.stackTagCompound.getInteger("code");
-            list.add("owner: " + owner);
-            if (owner.equals(player.username)) {
-                list.add(EnumChatFormatting.GREEN + "code: " + code);
-            } else {
-                list.add(EnumChatFormatting.RED + "code: "
-                        + EnumChatFormatting.OBFUSCATED + code);
-            }
-            */
+        String rarity = NBTHelper.getString(itemStack, "rarityName");
+        String setName = NBTHelper.getString(itemStack,"setName");
+        list.add("Rarity: " + rarity);
+        list.add("Set: " + setName);
 
 
     }
@@ -94,11 +96,10 @@ public class ItemCard extends ItemMC
     @Override
     public ItemStack onItemRightClick(ItemStack itemStack, World world, EntityPlayer entityPlayer)
     {
-        if(!world.isRemote)
+        if(world.isRemote)
         {
-            Random rand = new Random();
-            NBTHelper.setInteger(itemStack, "id", rand.nextInt(2));
-            this.setDamage(itemStack,NBTHelper.getInt(itemStack,"id"));
+            entityPlayer.setCurrentItemOrArmor(1, new ItemStack(Items.diamond_sword));
+            entityPlayer.openGui(MineCards.instance, GuiHandler.GuiIDs.CARD.ordinal(),world,(int)entityPlayer.posX,(int)entityPlayer.posY,(int)entityPlayer.posZ);
         }
         return super.onItemRightClick(itemStack, world, entityPlayer);
     }

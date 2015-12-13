@@ -1,6 +1,7 @@
 package com.tayjay.minecards.card;
 
 import com.tayjay.minecards.reference.Names;
+import net.minecraft.init.Blocks;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,6 +11,7 @@ import java.util.List;
  */
 public class CardRegistry
 {
+    /*
     public static List<Card> cardsList = new ArrayList<Card>();
     public static Card stoneCard;
     public static Card grassCard;
@@ -45,4 +47,5 @@ public class CardRegistry
     {
         return cardsList.get(id);
     }
+    */
 }

@@ -5,12 +5,14 @@ import com.tayjay.minecards.init.ModItems;
 import com.tayjay.minecards.proxy.CommonProxy;
 import com.tayjay.minecards.reference.Reference;
 import com.tayjay.minecards.util.LogHelper;
+import com.tayjay.minecards.util.RenderUtil;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
+import cpw.mods.fml.common.network.NetworkRegistry;
 
 /**
  * Created by tayjm_000 on 2015-10-18.
@@ -36,9 +38,10 @@ public class MineCards
     {
         LogHelper.debug("Starting Pre-Initialization.");
 
-        CardRegistry.init();
+        //CardRegistry.init();
         proxy.preInit();
         ModItems.init();
+        NetworkRegistry.INSTANCE.registerGuiHandler(instance, new GuiHandler());
 
         LogHelper.debug("Ending Pre-Initialization.");
     }
@@ -55,6 +58,8 @@ public class MineCards
     public void postInit(FMLPostInitializationEvent event)
     {
         LogHelper.debug("Starting Post-Initialization.");
+
+        //RenderUtil.init();
 
         LogHelper.debug("Ending Post-Initialization.");
     }
